@@ -1,9 +1,7 @@
 'use client';
 import { useTheme } from 'next-themes';
-import { SunIcon, MoonIcon, MonitorIcon } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
-import { cn } from '@/lib/utils';
-import { Select } from '../SettingsDialog';
+import Select from '../ui/Select';
 
 type Theme = 'dark' | 'light' | 'system';
 
@@ -53,7 +51,7 @@ const ThemeSwitcher = ({ className }: { className?: string }) => {
       onChange={(e) => handleThemeSwitch(e.target.value as Theme)}
       options={[
         { value: 'light', label: 'Light' },
-        { value: 'dark', label: 'Dark' }
+        { value: 'dark', label: 'Dark' },
       ]}
     />
   );

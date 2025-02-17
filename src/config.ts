@@ -8,14 +8,32 @@ interface Config {
   GENERAL: {
     PORT: number;
     SIMILARITY_MEASURE: string;
+    KEEP_ALIVE: string;
   };
-  API_KEYS: {
-    OPENAI: string;
-    GROQ: string;
+  MODELS: {
+    OPENAI: {
+      API_KEY: string;
+    };
+    GROQ: {
+      API_KEY: string;
+    };
+    ANTHROPIC: {
+      API_KEY: string;
+    };
+    GEMINI: {
+      API_KEY: string;
+    };
+    OLLAMA: {
+      API_URL: string;
+    };
+    CUSTOM_OPENAI: {
+      API_URL: string;
+      API_KEY: string;
+      MODEL_NAME: string;
+    };
   };
   API_ENDPOINTS: {
     SEARXNG: string;
-    OLLAMA: string;
   };
 }
 
@@ -33,37 +51,67 @@ export const getPort = () => loadConfig().GENERAL.PORT;
 export const getSimilarityMeasure = () =>
   loadConfig().GENERAL.SIMILARITY_MEASURE;
 
-export const getOpenaiApiKey = () => loadConfig().API_KEYS.OPENAI;
+export const getKeepAlive = () => loadConfig().GENERAL.KEEP_ALIVE;
 
-export const getGroqApiKey = () => loadConfig().API_KEYS.GROQ;
+export const getOpenaiApiKey = () => loadConfig().MODELS.OPENAI.API_KEY;
 
-export const getSearxngApiEndpoint = () => loadConfig().API_ENDPOINTS.SEARXNG;
+export const getGroqApiKey = () => loadConfig().MODELS.GROQ.API_KEY;
 
-export const getOllamaApiEndpoint = () => loadConfig().API_ENDPOINTS.OLLAMA;
+export const getAnthropicApiKey = () => loadConfig().MODELS.ANTHROPIC.API_KEY;
 
-export const updateConfig = (config: RecursivePartial<Config>) => {
-  const currentConfig = loadConfig();
+export const getGeminiApiKey = () => loadConfig().MODELS.GEMINI.API_KEY;
 
-  for (const key in currentConfig) {
-    if (!config[key]) config[key] = {};
+export const getSearxngApiEndpoint = () =>
+  process.env.SEARXNG_API_URL || loadConfig().API_ENDPOINTS.SEARXNG;
 
-    if (typeof currentConfig[key] === 'object' && currentConfig[key] !== null) {
-      for (const nestedKey in currentConfig[key]) {
-        if (
-          !config[key][nestedKey] &&
-          currentConfig[key][nestedKey] &&
-          config[key][nestedKey] !== ''
-        ) {
-          config[key][nestedKey] = currentConfig[key][nestedKey];
-        }
+export const getOllamaApiEndpoint = () => loadConfig().MODELS.OLLAMA.API_URL;
+
+export const getCustomOpenaiApiKey = () =>
+  loadConfig().MODELS.CUSTOM_OPENAI.API_KEY;
+
+export const getCustomOpenaiApiUrl = () =>
+  loadConfig().MODELS.CUSTOM_OPENAI.API_URL;
+
+export const getCustomOpenaiModelName = () =>
+  loadConfig().MODELS.CUSTOM_OPENAI.MODEL_NAME;
+
+const mergeConfigs = (current: any, update: any): any => {
+  if (update === null || update === undefined) {
+    return current;
+  }
+
+  if (typeof current !== 'object' || current === null) {
+    return update;
+  }
+
+  const result = { ...current };
+
+  for (const key in update) {
+    if (Object.prototype.hasOwnProperty.call(update, key)) {
+      const updateValue = update[key];
+
+      if (
+        typeof updateValue === 'object' &&
+        updateValue !== null &&
+        typeof result[key] === 'object' &&
+        result[key] !== null
+      ) {
+        result[key] = mergeConfigs(result[key], updateValue);
+      } else if (updateValue !== undefined) {
+        result[key] = updateValue;
       }
-    } else if (currentConfig[key] && config[key] !== '') {
-      config[key] = currentConfig[key];
     }
   }
 
+  return result;
+};
+
+export const updateConfig = (config: RecursivePartial<Config>) => {
+  const currentConfig = loadConfig();
+  const mergedConfig = mergeConfigs(currentConfig, config);
+
   fs.writeFileSync(
     path.join(__dirname, `../${configFileName}`),
-    toml.stringify(config),
+    toml.stringify(mergedConfig),
   );
 };

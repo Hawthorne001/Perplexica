@@ -6,8 +6,6 @@ import Link from 'next/link';
 import { useSelectedLayoutSegments } from 'next/navigation';
 import React, { useState, type ReactNode } from 'react';
 import Layout from './Layout';
-import SettingsDialog from './SettingsDialog';
-import ThemeSwitcher from './theme/Switcher';
 
 const VerticalIconContainer = ({ children }: { children: ReactNode }) => {
   return (
@@ -24,7 +22,7 @@ const Sidebar = ({ children }: { children: React.ReactNode }) => {
     {
       icon: Home,
       href: '/',
-      active: segments.length === 0,
+      active: segments.length === 0 || segments.includes('c'),
       label: 'Home',
     },
     {
@@ -68,15 +66,9 @@ const Sidebar = ({ children }: { children: React.ReactNode }) => {
             ))}
           </VerticalIconContainer>
 
-          <Settings
-            onClick={() => setIsSettingsOpen(!isSettingsOpen)}
-            className="cursor-pointer"
-          />
-
-          <SettingsDialog
-            isOpen={isSettingsOpen}
-            setIsOpen={setIsSettingsOpen}
-          />
+          <Link href="/settings">
+            <Settings className="cursor-pointer" />
+          </Link>
         </div>
       </div>
 

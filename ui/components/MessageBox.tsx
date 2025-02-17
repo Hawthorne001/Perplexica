@@ -7,7 +7,6 @@ import { cn } from '@/lib/utils';
 import {
   BookCopy,
   Disc3,
-  Share,
   Volume2,
   StopCircle,
   Layers3,
@@ -108,8 +107,8 @@ const MessageBox = ({
               </div>
               <Markdown
                 className={cn(
-                  'prose dark:prose-invert prose-p:leading-relaxed prose-pre:p-0',
-                  'max-w-none break-words text-black dark:text-white text-sm md:text-base font-medium',
+                  'prose prose-h1:mb-3 prose-h2:mb-2 prose-h2:mt-6 prose-h2:font-[800] prose-h3:mt-4 prose-h3:mb-1.5 prose-h3:font-[600] dark:prose-invert prose-p:leading-relaxed prose-pre:p-0 font-[400]',
+                  'max-w-none break-words text-black dark:text-white',
                 )}
               >
                 {parsedMessage}
@@ -120,7 +119,7 @@ const MessageBox = ({
                     {/*  <button className="p-2 text-black/70 dark:text-white/70 rounded-xl hover:bg-light-secondary dark:hover:bg-dark-secondary transition duration-200 hover:text-black text-black dark:hover:text-white">
                       <Share size={18} />
                     </button> */}
-                    <Rewrite rewrite={rewrite} messageId={message.id} />
+                    <Rewrite rewrite={rewrite} messageId={message.messageId} />
                   </div>
                   <div className="flex flex-row items-center space-x-1">
                     <Copy initialMessage={message.content} message={message} />
@@ -187,10 +186,10 @@ const MessageBox = ({
           <div className="lg:sticky lg:top-20 flex flex-col items-center space-y-3 w-full lg:w-3/12 z-30 h-full pb-4">
             <SearchImages
               query={history[messageIndex - 1].content}
-              chat_history={history.slice(0, messageIndex - 1)}
+              chatHistory={history.slice(0, messageIndex - 1)}
             />
             <SearchVideos
-              chat_history={history.slice(0, messageIndex - 1)}
+              chatHistory={history.slice(0, messageIndex - 1)}
               query={history[messageIndex - 1].content}
             />
           </div>
